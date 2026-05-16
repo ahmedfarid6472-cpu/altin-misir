@@ -715,13 +715,11 @@ footer {
         <input type="email" id="email" placeholder="ornek@email.com" required>
       </div>
       <div class="form-group">
-        <label data-tr="Tur Seçin" data-en="Select Tour">Tur Seçin</label>
-        <select id="tour">
-          <option data-tr="Giza Piramitleri — $89–$280"     data-en="Pyramids of Giza — $89–$280">Giza Piramitleri — $89–$280</option>
-          <option data-tr="Şnorkeling — Hurgada — $55–$190" data-en="Snorkeling — Hurghada — $55–$190">Şnorkeling — Hurgada — $55–$190</option>
-          <option data-tr="Nil Nehri Yolculuğu — $320–$950" data-en="Nile River Cruise — $320–$950">Nil Nehri Yolculuğu — $320–$950</option>
-        </select>
-      </div>
+  <label data-tr="Tur Seçin" data-en="Select Tour">Tur Seçin</label>
+  <select id="tour">
+    <option value="" data-tr="Bir tur seçinen" data-en="Select a Tour">Select a Tour / Tur Seçin</option>
+    </select>
+</div>
       <div class="form-row">
         <div class="form-group">
           <label data-tr="Seyahat Tarihi" data-en="Travel Date">Seyahat Tarihi</label>
@@ -849,6 +847,90 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
   window.open(`https://wa.me/201069805697?text=${msg}`, '_blank');
 });
 </script>
+</section>
 
-</body>
+    <script>
+        async function loadDynamicTours() {
+          const cardsContainer = document.getElementById('tours-container');
+          const selectDropdown = document.getElementById('tour');
+          
+          try {
+            const response = await fetch('https://api.github.com/repos/ahmedfarid6472-cpu/altin-misir/contents/tours');
+            const files = await response.json();
+            
+            if (cardsContainer) cardsContainer.innerHTML = '';
+            if (selectDropdown) {
+              selectDropdown.innerHTML = '<option value="" data-tr="Bir tur seçin" data-en="Select a Tour">Select a Tour / Tur Seçin</option>';
+            }
+            
+            for (const file of files) {
+              if (file.name.endsWith('.json')) {
+                const tourRes = await fetch(file.download_url);
+                const tour = await tourRes.json();
+                
+                if (cardsContainer) {
+                  const tourCard = `
+                    <div class="tour-card">
+                      <img src="/${tour.image}" alt="${tour.title}" class="tour-img">
+                      <div class="tour-details">
+                        <h3>${tour.title}</h3>
+                        <p>${tour.body}</p>
+                        <div class="tour-meta">
+                          <span class="price">${tour.price} EGP</span>
+                          ${tour.location ? `<span class="location"><i class="fas fa-map-marker-alt"></i> ${tour.location}</span>` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                  cardsContainer.innerHTML += tourCard;
+                }
+                
+                if (selectDropdown) {
+                  const option = document.createElement('option');
+                  option.value = tour.title;
+                  option.textContent = tour.title;
+                  option.setAttribute('data-tr', tour.title);
+                  option.setAttribute('data-en', tour.title);
+                  selectDropdown.appendChild(option);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('خطأ أثناء تحميل وتغذية بيانات الرحلات:', error);
+          }
+        }
+
+        async function loadDynamicGallery() {
+          const container = document.getElementById('gallery-container');
+          if (!container) return;
+          
+          try {
+            const response = await fetch('/data/gallery.json');
+            if (!response.ok) return;
+            const data = await response.json();
+            
+            container.innerHTML = '';
+            
+            data.gallery_items.forEach(item => {
+              const galleryItem = `
+                <div class="gallery-item">
+                  <img src="/${item.image}" alt="${item.location}">
+                  <div class="gallery-overlay">
+                    <span>${item.location}</span>
+                  </div>
+                </div>
+              `;
+              container.innerHTML += galleryItem;
+            });
+          } catch (error) {
+            console.error('خطأ أثناء تحميل معرض الصور:', error);
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          loadDynamicTours();
+          loadDynamicGallery();
+        });
+    </script>
+    </body>
 </html>
