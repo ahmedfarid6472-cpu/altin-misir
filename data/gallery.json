@@ -1,6 +1,10 @@
 {
   "gallery_items": [
     {
+      "image": "image/photo_9_2026-05-16_23-19-30.jpg",
+      "location": "pyramids0"
+    },
+    {
       "image": "image/photo_8_2026-05-16_23-19-30.jpg",
       "location": "pyramids"
     },
@@ -11,10 +15,6 @@
     {
       "image": "image/photo_17_2026-05-16_23-19-30.jpg",
       "location": "snorkeling0"
-    },
-    {
-      "image": "image/photo_9_2026-05-16_23-19-30.jpg",
-      "location": "pyramids0"
     },
     {
       "image": "image/photo_4_2026-05-16_23-19-30.jpg",
